@@ -20,6 +20,11 @@ Session(app)
 def index():
     
     if request.method == "POST":
-        pass
+        
+        # TODO build google service
+
+        # TODO get courses name and id
+
+        return render_template("courses.html", courses=courses)
     else:
-        return render_template("index.html")
+        return render_template("login.html")
