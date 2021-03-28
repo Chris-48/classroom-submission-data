@@ -1,0 +1,13 @@
+{% extends "layout.html"%}
+
+{%block main%}    
+    {% if session.credentials %}
+        
+    <form action="/select" method="POST">
+        <input class="btn btn-primary" type="submit" value="GO">
+    </form>
+
+    {% else %}
+        <a class="btn btn-primary" href="/login">Log In</a>
+    {% endif %}
+{%endblock%}

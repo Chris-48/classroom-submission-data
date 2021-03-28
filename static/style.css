@@ -3,6 +3,17 @@
     padding-top: 5%;
 }
 
-footer{
-    padding-top: 5%;
+.form-control{
+    width: 50%;
+    text-align: center;
+    margin: auto;
 }
+
+input{
+    margin-top: 2%;
+}
+
+footer{
+    padding-top: 2%;
+}
+
