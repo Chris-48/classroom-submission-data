@@ -1,30 +1,102 @@
 from flask import render_template
 from flask import Flask
 from flask import request
-from flask_session import Session
-from tempfile import mkdtemp
+from flask import redirect
+from flask import session
+from flask.helpers import url_for
+
+import os
+from requests import post
+
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+import googleapiclient.discovery
+
+from helpers import credentials_to_dict
 
 
 app = Flask(__name__)
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_FILE_DIR"] = mkdtemp()
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+app.secret_key = "secret"
+
+CLIENT_SECRETS = {
+    "web": {
+        "client_id": os.environ["CLIENT_ID"],
+        "project_id": os.environ["PROJECT_ID"],
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": os.environ["CLIENT_SECRET"]
+    }
+}
+
+SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"]
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    
-    if request.method == "POST":
-        
-        # TODO build google service
+    return redirect("/select")
 
-        # TODO get courses name and id
 
-        return render_template("courses.html", courses=courses)
-    else:
-        return render_template("login.html")
+@app.route("/select", methods=["GET", "POST"])
+def select():
+    return render_template("select.html")
+
+
+@app.route("/submission_data", methods=["POST"])
+def submission_data():
+    pass
+
+
+@app.route("/login")
+def login():
+    # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+      CLIENT_SECRETS, scopes=SCOPES)
+
+    flow.redirect_uri = url_for('oauth2callback', _external=True)
+
+    authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+    session['state'] = state
+
+    return redirect(authorization_url)
+
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    state = session['state']
+
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        CLIENT_SECRETS, scopes=SCOPES, state=state)
+    flow.redirect_uri = url_for('oauth2callback', _external=True)
+
+    authorization_response = request.url
+    flow.fetch_token(authorization_response=authorization_response)
+
+    credentials = flow.credentials
+    session['credentials'] = credentials_to_dict(credentials)
+
+    return redirect(url_for('select'))
+
+
+@app.route("/logout")
+def logout():
+    if 'credentials' in session:
+   
+        credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+
+        revoke = post('https://oauth2.googleapis.com/revoke',
+        params={'token': credentials.token},
+        headers = {'content-type': 'application/x-www-form-urlencoded'})
+
+        del session["credentials"]
+
+        return redirect("/")
+
+
+if __name__ == '__main__':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+    app.run('localhost', 5000, debug=True)
