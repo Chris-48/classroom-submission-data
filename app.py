@@ -32,7 +32,10 @@ CLIENT_SECRETS = {
     }
 }
 
-SCOPES = ["https://www.googleapis.com/auth/classroom.courses.readonly"]
+SCOPES = [
+    "https://www.googleapis.com/auth/classroom.courses.readonly",
+    "https://www.googleapis.com/auth/classroom.topics.readonly"
+]
 
 
 @app.route("/")
@@ -66,7 +69,7 @@ def request_api():
             if topic_id:
                 return classroom.get_courses_activities_from_topic(course_id, topic_id)
 
-            return classroom.get_topics(course_id)
+            return classroom.get_courses_topics(course_id)
     else:
         return "wrong request", 406
 

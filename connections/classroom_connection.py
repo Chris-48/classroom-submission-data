@@ -1,6 +1,4 @@
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from connections.connection_errors import IdError
 
 
 class classroom_connection:
@@ -31,37 +29,34 @@ class classroom_connection:
 
     def get_courses_activities(self, course_id) -> dict:
         """return a dictionary with the course activities and the corresponding id"""
-        
-        try:
-            activities = self.service.courses().courseWork().list(courseId=course_id).execute()["courseWork"]
-        except:
-            raise IdError(str(self), course_id)
+
+        activities = self.service.courses().courseWork().list(courseId=course_id).execute()["courseWork"]
 
         return {activity["title"] : activity["id"] for activity in activities}
+
+
+    def get_courses_topics(self, course_id) -> dict:
+        """return a dictionary with the topics of the course and the corresponding id"""
+
+        topics = self.service.courses().topics().list(courseId=course_id).execute()["topic"]
+
+        return {topic["name"] : topic["topicId"] for topic in topics}
 
 
     def get_courses_activities_from_topic(self, course_id, topic_id) -> dict:
         """return a dictionary with the course activities and the corresponding id"""
     
-        try:
-            activities = self.service.courses().courseWork().list(courseId=course_id).execute()["courseWork"]
-        except:
-            raise IdError(str(self), course_id)
+        activities = self.service.courses().courseWork().list(courseId=course_id).execute()["courseWork"]      
 
         return {activity["title"] : activity["id"] for activity in activities if activity["topicId"] == topic_id}
 
     
     def get_students(self, course_id) -> dict:
         """return a dictionary with the stundents names and the corresponding id"""
-        
-        try:
-            
-            students = self.service.courses().students().list(
-                courseId = course_id
-            ).execute()["students"]
-
-        except HttpError:
-            raise IdError(str(self), course_id)
+    
+        students = self.service.courses().students().list(
+            courseId = course_id
+        ).execute()["students"]
         
         return {student["profile"]["id"] : student["profile"]["name"]["fullName"] for student in students}
 
@@ -71,16 +66,11 @@ class classroom_connection:
         return a dictionary with the stundents names as keys and 'Missing'/'Done' as values acording to the submission state
         
         students: a dict with the students id as keys and students names as values
-        """
+        """        
         
-        try:
-            
-            submissions = self.service.courses().courseWork().studentSubmissions().list(
-                courseId = course_id,
-                courseWorkId = activity_id
-            ).execute()["studentSubmissions"]
-
-        except HttpError:
-            raise IdError(str(self), [course_id, activity_id])
+        submissions = self.service.courses().courseWork().studentSubmissions().list(
+            courseId = course_id,
+            courseWorkId = activity_id
+        ).execute()["studentSubmissions"]
 
         return {students[ submission["userId"] ] : "Missing" if  submission["state"] == "CREATED" else "Done" for submission in submissions}

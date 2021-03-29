@@ -6,12 +6,26 @@
     <script>
 
         $(document).ready(() =>{
-            let courses = $('#courses')
-            let topics = $('#topcs')
-            let activities = $('#activities')
-            let button = $('#get_button')
+            let courses = $('#courses');
+            let topics = $('#topics');
+            let activities = $('#activities');
+            let button = $('#get_button');
 
             courses.css({'display': 'block'})
+
+            courses.change(() =>{
+                $.post('/request_api',{'course_id': courses.val()} , (request_topics) =>{
+                    html = '<option disabled selected value> select a topic </option>';
+
+                    for (let topic in request_topics)
+                    {
+                        html += `<option value="${request_topics[topic]}">${topic}</option>`
+                    }
+
+                    topics.html(html)
+                    topics.css({'display': 'block'})
+                });
+            });
         });
 
     </script>
@@ -24,6 +38,7 @@
 
         <select class="form-control hidden" name="course_id" id="courses">
             {% for course in courses%}
+                <option disabled selected value> select a course </option>
                 <option value="{{courses[course]}}">{{course}}</option>
             {%endfor%}
         </select>
