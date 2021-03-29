@@ -13,7 +13,7 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 
 from helpers import credentials_to_dict
-
+from connections.classroom_connection import classroom_connection
 
 app = Flask(__name__)
 
@@ -42,7 +42,34 @@ def index():
 
 @app.route("/select", methods=["GET", "POST"])
 def select():
-    return render_template("select.html")
+    courses = None
+
+    if "credentials" in session:
+        credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+
+        with classroom_connection(credentials) as classroom:
+            courses = classroom.get_courses()
+
+    return render_template("select.html", courses=courses)
+
+
+@app.route("/request_api", methods=["POST"])
+def request_api():
+
+    course_id = request.form.get("course_id")
+    topic_id = request.form.get("topic_id")
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
+
+    if course_id:
+        with classroom_connection(credentials) as classroom:
+            if topic_id:
+                return classroom.get_courses_activities_from_topic(course_id, topic_id)
+
+            return classroom.get_topics(course_id)
+    else:
+        return "wrong request", 406
+
 
 
 @app.route("/submission_data", methods=["POST"])
@@ -53,8 +80,7 @@ def submission_data():
 @app.route("/login")
 def login():
     # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-    flow = google_auth_oauthlib.flow.Flow.from_client_config(
-      CLIENT_SECRETS, scopes=SCOPES)
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(CLIENT_SECRETS, scopes=SCOPES)
 
     flow.redirect_uri = url_for('oauth2callback', _external=True)
 

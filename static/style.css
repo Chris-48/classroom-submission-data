@@ -1,12 +1,17 @@
 .content{
     text-align: center;
-    padding-top: 5%;
+    padding-top: 1%;
 }
 
 .form-control{
     width: 50%;
     text-align: center;
     margin: auto;
+    margin-top: 2%;
+}
+
+.hidden{
+    display: none;
 }
 
 input{
@@ -16,4 +21,3 @@ input{
 footer{
     padding-top: 2%;
 }
-

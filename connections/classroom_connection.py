@@ -39,6 +39,17 @@ class classroom_connection:
 
         return {activity["title"] : activity["id"] for activity in activities}
 
+
+    def get_courses_activities_from_topic(self, course_id, topic_id) -> dict:
+        """return a dictionary with the course activities and the corresponding id"""
+    
+        try:
+            activities = self.service.courses().courseWork().list(courseId=course_id).execute()["courseWork"]
+        except:
+            raise IdError(str(self), course_id)
+
+        return {activity["title"] : activity["id"] for activity in activities if activity["topicId"] == topic_id}
+
     
     def get_students(self, course_id) -> dict:
         """return a dictionary with the stundents names and the corresponding id"""
@@ -72,4 +83,4 @@ class classroom_connection:
         except HttpError:
             raise IdError(str(self), [course_id, activity_id])
 
-        return {students[ submission["userId"] ] : "Missing" if  submission["state"]== "CREATED" else "Done" for submission in submissions}
+        return {students[ submission["userId"] ] : "Missing" if  submission["state"] == "CREATED" else "Done" for submission in submissions}

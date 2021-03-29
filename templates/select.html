@@ -1,10 +1,36 @@
 {% extends "layout.html"%}
 
+{%block script%}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+
+        $(document).ready(() =>{
+            let courses = $('#courses')
+            let topics = $('#topcs')
+            let activities = $('#activities')
+            let button = $('#get_button')
+
+            courses.css({'display': 'block'})
+        });
+
+    </script>
+{%endblock%}
+
 {%block main%}    
     {% if session.credentials %}
         
     <form action="/select" method="POST">
-        <input class="btn btn-primary" type="submit" value="GO">
+
+        <select class="form-control hidden" name="course_id" id="courses">
+            {% for course in courses%}
+                <option value="{{courses[course]}}">{{course}}</option>
+            {%endfor%}
+        </select>
+        <select class="form-control hidden" name="topic_id" id="topics"></select>
+        <select class="form-control hidden" name="activity_id" id="activities"></select>
+
+        <input id="get-button" class="btn btn-primary hidden" type="submit" value="GO">
     </form>
 
     {% else %}
