@@ -34,7 +34,9 @@ CLIENT_SECRETS = {
 
 SCOPES = [
     "https://www.googleapis.com/auth/classroom.courses.readonly",
-    "https://www.googleapis.com/auth/classroom.topics.readonly"
+    "https://www.googleapis.com/auth/classroom.topics.readonly",
+    "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly",
+    "https://www.googleapis.com/auth/classroom.rosters.readonly"
 ]
 
 
@@ -43,7 +45,7 @@ def index():
     return redirect("/select")
 
 
-@app.route("/select", methods=["GET", "POST"])
+@app.route("/select")
 def select():
     courses = None
 
@@ -67,7 +69,7 @@ def request_api():
     if course_id:
         with classroom_connection(credentials) as classroom:
             if topic_id:
-                return classroom.get_courses_activities_from_topic(course_id, topic_id)
+                return classroom.get_activities_from_topic(course_id, topic_id)
 
             return classroom.get_courses_topics(course_id)
     else:
@@ -77,7 +79,18 @@ def request_api():
 
 @app.route("/submission_data", methods=["POST"])
 def submission_data():
-    pass
+    
+    course_id = request.form.get("course_id")
+    activity_id = request.form.get("activity_id")
+
+    credentials = google.oauth2.credentials.Credentials(**session['credentials'])    
+
+    with classroom_connection(credentials) as classroom:
+        students = classroom.get_students(course_id)
+
+        students_submission_states = classroom.submission_data(course_id, activity_id, students)
+    print(students_submission_states)
+    return render_template("submission_data.html", students_submission_states=students_submission_states)
 
 
 @app.route("/login")

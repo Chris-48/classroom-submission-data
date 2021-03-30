@@ -5,5 +5,19 @@
 {% endblock %}
 
 {% block main %}
-    
+    <table class="table table-striped">
+        <thead>
+            <th>Name</th>
+            <th>State</th>
+        </thead>
+        <tbody>
+
+            {% for student_submission_states in students_submission_states %}
+                <tr>
+                    <td>{{student_submission_states}}</td>
+                    <td>{{students_submission_states[student_submission_states]}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

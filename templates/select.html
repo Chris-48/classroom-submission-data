@@ -6,27 +6,59 @@
     <script>
 
         $(document).ready(() =>{
+            
             let courses = $('#courses');
             let topics = $('#topics');
             let activities = $('#activities');
-            let button = $('#get_button');
+            let button = $('#get-button');
 
-            courses.css({'display': 'block'})
+            courses.css({'visibility': 'visible'})
 
             courses.change(() =>{
-                $.post('/request_api',{'course_id': courses.val()} , (request_topics) =>{
-                    html = '<option disabled selected value> select a topic </option>';
-
-                    for (let topic in request_topics)
+                $.post(
+                    '/request_api',
                     {
-                        html += `<option value="${request_topics[topic]}">${topic}</option>`
-                    }
+                        'course_id': courses.val()
+                    }, 
+                    (request_topics) =>{
+                        html = '<option disabled selected value> select a topic </option>';
 
-                    topics.html(html)
-                    topics.css({'display': 'block'})
+                        for (let topic in request_topics)
+                        {
+                            html += `<option value="${request_topics[topic]}">${topic}</option>`;
+                        }
+
+                        topics.html(html);
+                        topics.css({'visibility': 'visible'});
+                    });
+                
                 });
+
+            topics.change(() =>{
+                $.post(
+                    '/request_api',
+                    {
+                        'course_id': courses.val(),
+                        'topic_id': topics.val()
+                    },
+                    (request_activities) =>{
+                        html = '<option disabled selected value> select a activity </option>';
+
+                        for (let activity in request_activities)
+                        {
+                            html += `<option value="${request_activities[activity]}">${activity}</option>`;
+                        }
+
+                        activities.html(html);
+                        activities.css({'visibility': 'visible'});
+                    });
             });
+
+        activities.change(() =>{
+            button.css({'visibility': 'visible'}) 
         });
+        
+    });
 
     </script>
 {%endblock%}
@@ -34,11 +66,11 @@
 {%block main%}    
     {% if session.credentials %}
         
-    <form action="/select" method="POST">
+    <form action="/submission_data" method="POST">
 
         <select class="form-control hidden" name="course_id" id="courses">
+            <option disabled selected value> select a course </option>
             {% for course in courses%}
-                <option disabled selected value> select a course </option>
                 <option value="{{courses[course]}}">{{course}}</option>
             {%endfor%}
         </select>
