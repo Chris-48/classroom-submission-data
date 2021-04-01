@@ -22,6 +22,12 @@ class classroom_connection:
     __repr__ = __str__
 
 
+    def get_user_id(self) -> str:
+        """return the ID of the user"""
+
+        return self.service.userProfiles().get(userId="me", fields="id").execute()["id"]
+
+
     def get_courses(self) -> dict:
         """return a dictionary with the courses and the corresponding id"""
 

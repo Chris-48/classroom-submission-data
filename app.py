@@ -1,5 +1,6 @@
 import os
 from requests import post
+from sqlite3 import connect
 
 from flask import render_template
 from flask import Flask
@@ -9,9 +10,8 @@ from flask import session
 from flask.helpers import url_for
 
 import google_auth_oauthlib.flow
-import googleapiclient.discovery
 
-from helpers import credentials_to_dict
+from helpers import store_credentials
 from helpers import get_credentials
 from connections.classroom_connection import classroom_connection
 
@@ -49,7 +49,7 @@ def index():
 def select():
     courses = None
 
-    if "credentials" in session:
+    if "user_id" in session:
 
         with classroom_connection(get_credentials()) as classroom:
             courses = classroom.get_courses()
@@ -73,28 +73,37 @@ def request_api():
         return "wrong request", 406
 
 
-
 @app.route("/submission_data", methods=["POST"])
 def submission_data():
-    
+
     course_id = request.form.get("course_id")
     activity_id = request.form.get("activity_id")
 
     with classroom_connection(get_credentials()) as classroom:
         students = classroom.get_students(course_id)
 
-        students_submission_states = classroom.submission_data(course_id, activity_id, students)
-    return render_template("submission_data.html", students_submission_states=sorted(students_submission_states.items()))
+        students_submission_states = classroom.submission_data(
+            course_id, activity_id, students)
+
+    return render_template(
+        "submission_data.html",
+        students_submission_states=sorted(students_submission_states.items())
+    )
 
 
 @app.route("/login")
 def login():
     # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-    flow = google_auth_oauthlib.flow.Flow.from_client_config(CLIENT_SECRETS, scopes=SCOPES)
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        CLIENT_SECRETS, scopes=SCOPES)
 
     flow.redirect_uri = url_for('oauth2callback', _external=True)
 
-    authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true'
+    )
+
     session['state'] = state
 
     return redirect(authorization_url)
@@ -105,29 +114,39 @@ def oauth2callback():
     state = session['state']
 
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
-        CLIENT_SECRETS, scopes=SCOPES, state=state)
+        CLIENT_SECRETS,
+        scopes=SCOPES,
+        state=state
+    )
+
     flow.redirect_uri = url_for('oauth2callback', _external=True)
 
     authorization_response = request.url
     flow.fetch_token(authorization_response=authorization_response)
 
     credentials = flow.credentials
-    session['credentials'] = credentials_to_dict(credentials)
+
+    with classroom_connection(credentials) as classroom:
+        session["user_id"] = classroom.get_user_id()
+
+    store_credentials(credentials)
 
     return redirect(url_for('select'))
 
 
 @app.route("/logout")
 def logout():
-    if 'credentials' in session:
 
+    if "user_id" in session:
         revoke = post('https://oauth2.googleapis.com/revoke',
-        params = {'token': get_credentials().token},
-        headers = {'content-type': 'application/x-www-form-urlencoded'})
+                      params={'token': get_credentials().token},
+                      headers={
+                          'content-type': 'application/x-www-form-urlencoded'}
+                      )
 
-        del session["credentials"]
+        del session["user_id"]
 
-        return redirect("/")
+    return redirect("/")
 
 
 if __name__ == '__main__':

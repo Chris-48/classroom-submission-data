@@ -71,7 +71,7 @@
 {%endblock%}
 
 {%block main%}    
-    {% if session.credentials %}
+    {% if session.user_id %}
         
     <form action="/submission_data" method="POST">
 
@@ -90,7 +90,7 @@
     </form>
 
     {% else %}
-        <div style="margin-bottom: 34%;">
+        <div style="margin-bottom: 33%;">
             <a class="btn btn-primary btn-lg" href="/login">Log In</a>
         </div>
     {% endif %}
