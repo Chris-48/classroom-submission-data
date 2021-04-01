@@ -15,13 +15,17 @@
             courses.css({'visibility': 'visible'})
 
             courses.change(() =>{
+                topics.css({'visibility':'hidden'})
+                activities.css({'visibility':'hidden'})
+                button.css({'visibility':'hidden'})
+                
                 $.post(
                     '/request_api',
                     {
                         'course_id': courses.val()
                     }, 
                     (request_topics) =>{
-                        html = '<option disabled selected value> select a topic </option>';
+                        html = '<option disabled selected style="display:none;"> select a topic </option>';
 
                         for (let topic in request_topics)
                         {
@@ -35,6 +39,9 @@
                 });
 
             topics.change(() =>{
+                activities.css({'visibility':'hidden'})
+                button.css({'visibility':'hidden'})
+                
                 $.post(
                     '/request_api',
                     {
@@ -42,7 +49,7 @@
                         'topic_id': topics.val()
                     },
                     (request_activities) =>{
-                        html = '<option disabled selected value> select a activity </option>';
+                        html = '<option disabled selected style="display:none;"> select a activity </option>';
 
                         for (let activity in request_activities)
                         {
@@ -68,19 +75,23 @@
         
     <form action="/submission_data" method="POST">
 
-        <select class="form-control hidden" name="course_id" id="courses">
-            <option disabled selected value> select a course </option>
+        <select class="btn btn-danger dropdown-toggle form-control custom-select hidden" name="course_id" id="courses">
+            <option disabled selected style="display:none;"> select a course </option>
             {% for course in courses%}
                 <option value="{{courses[course]}}">{{course}}</option>
             {%endfor%}
         </select>
-        <select class="form-control hidden" name="topic_id" id="topics"></select>
-        <select class="form-control hidden" name="activity_id" id="activities"></select>
+        <select class="btn btn-warning dropdown-toggle form-control custom-select hidden" name="topic_id" id="topics"></select>
+        <select class="btn btn-success dropdown-toggle form-control custom-select hidden" name="activity_id" id="activities"></select>
+
+        <br>
 
         <input id="get-button" class="btn btn-primary hidden" type="submit" value="GO">
     </form>
 
     {% else %}
-        <a class="btn btn-primary" href="/login">Log In</a>
+        <div style="margin-bottom: 34%;">
+            <a class="btn btn-primary btn-lg" href="/login">Log In</a>
+        </div>
     {% endif %}
 {%endblock%}

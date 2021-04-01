@@ -11,44 +11,64 @@ class classroom_connection:
     def __enter__(self):
         return self
 
+
     def __exit__(self, exc_type, exc_value, traceback):
         self.service.close()
+
 
     def __str__(self):
         return "classroom connetion"
 
     __repr__ = __str__
 
+
     def get_courses(self) -> dict:
         """return a dictionary with the courses and the corresponding id"""
 
         courses = self.service.courses().list(fields="courses(name,id)").execute()["courses"]
 
-        return {course["name"] : course["id"] for course in courses}
+        if courses:
+            return {course["name"] : course["id"] for course in courses}
+        return None
 
 
     def get_courses_activities(self, course_id) -> dict:
         """return a dictionary with the course activities and the corresponding id"""
 
-        activities = self.service.courses().courseWork().list(courseId=course_id, fields="courseWork(title, id)").execute()["courseWork"]
+        activities = self.service.courses().courseWork().list(
+            courseId=course_id, 
+            fields="courseWork(title, id)"
+        ).execute()["courseWork"]
 
-        return {activity["title"] : activity["id"] for activity in activities}
+        if activities:
+            return {activity["title"] : activity["id"] for activity in activities}
+        return None
 
 
     def get_courses_topics(self, course_id) -> dict:
         """return a dictionary with the topics of the course and the corresponding id"""
 
-        topics = self.service.courses().topics().list(courseId=course_id, fields="topic(name,topicId)").execute()["topic"]
+        topics = self.service.courses().topics().list(
+            courseId=course_id, 
+            fields="topic(name,topicId)"
+        ).execute()["topic"]
 
-        return {topic["name"] : topic["topicId"] for topic in topics}
+        if topics:
+            return {topic["name"] : topic["topicId"] for topic in topics}
+        return None
 
 
     def get_activities_from_topic(self, course_id, topic_id) -> dict:
         """return a dictionary with the course activities and the corresponding id"""
     
-        activities = self.service.courses().courseWork().list(courseId=course_id, fields="courseWork(title,id,topicId)").execute()["courseWork"]      
+        activities = self.service.courses().courseWork().list(
+            courseId=course_id, 
+            fields="courseWork(title,id,topicId)"
+        ).execute()["courseWork"]      
 
-        return {activity["title"] : activity["id"] for activity in activities if activity.get("topicId", None) == topic_id}
+        if activities:
+            return {activity["title"] : activity["id"] for activity in activities if activity.get("topicId", None) == topic_id}
+        return None
 
     
     def get_students(self, course_id) -> dict:
@@ -59,7 +79,9 @@ class classroom_connection:
             fields="students(profile/id,profile/name/fullName)"
         ).execute()["students"]
         
-        return {student["profile"]["id"] : student["profile"]["name"]["fullName"] for student in students}
+        if students:
+            return {student["profile"]["id"] : student["profile"]["name"]["fullName"] for student in students}
+        return None
 
 
     def submission_data(self, course_id, activity_id, students : dict) -> dict:
@@ -75,4 +97,6 @@ class classroom_connection:
             fields="studentSubmissions(userId,state)"
         ).execute()["studentSubmissions"]
 
-        return {students[ submission["userId"] ] : "Missing" if  submission["state"] == "CREATED" else "Done" for submission in submissions}
+        if submissions:
+            return {students[ submission["userId"] ] : "Missing" if  submission["state"] == "CREATED" else "Done" for submission in submissions}
+        return None

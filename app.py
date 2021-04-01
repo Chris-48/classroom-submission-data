@@ -1,3 +1,6 @@
+import os
+from requests import post
+
 from flask import render_template
 from flask import Flask
 from flask import request
@@ -5,14 +8,11 @@ from flask import redirect
 from flask import session
 from flask.helpers import url_for
 
-import os
-from requests import post
-
-import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 
 from helpers import credentials_to_dict
+from helpers import get_credentials
 from connections.classroom_connection import classroom_connection
 
 app = Flask(__name__)
@@ -50,9 +50,8 @@ def select():
     courses = None
 
     if "credentials" in session:
-        credentials = google.oauth2.credentials.Credentials(**session['credentials'])
 
-        with classroom_connection(credentials) as classroom:
+        with classroom_connection(get_credentials()) as classroom:
             courses = classroom.get_courses()
 
     return render_template("select.html", courses=courses)
@@ -64,10 +63,8 @@ def request_api():
     course_id = request.form.get("course_id")
     topic_id = request.form.get("topic_id")
 
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])
-
     if course_id:
-        with classroom_connection(credentials) as classroom:
+        with classroom_connection(get_credentials()) as classroom:
             if topic_id:
                 return classroom.get_activities_from_topic(course_id, topic_id)
 
@@ -83,14 +80,11 @@ def submission_data():
     course_id = request.form.get("course_id")
     activity_id = request.form.get("activity_id")
 
-    credentials = google.oauth2.credentials.Credentials(**session['credentials'])    
-
-    with classroom_connection(credentials) as classroom:
+    with classroom_connection(get_credentials()) as classroom:
         students = classroom.get_students(course_id)
 
         students_submission_states = classroom.submission_data(course_id, activity_id, students)
-    print(students_submission_states)
-    return render_template("submission_data.html", students_submission_states=students_submission_states)
+    return render_template("submission_data.html", students_submission_states=sorted(students_submission_states.items()))
 
 
 @app.route("/login")
@@ -126,11 +120,9 @@ def oauth2callback():
 @app.route("/logout")
 def logout():
     if 'credentials' in session:
-   
-        credentials = google.oauth2.credentials.Credentials(**session['credentials'])
 
         revoke = post('https://oauth2.googleapis.com/revoke',
-        params={'token': credentials.token},
+        params = {'token': get_credentials().token},
         headers = {'content-type': 'application/x-www-form-urlencoded'})
 
         del session["credentials"]

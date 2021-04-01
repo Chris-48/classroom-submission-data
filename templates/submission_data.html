@@ -12,10 +12,10 @@
         </thead>
         <tbody>
 
-            {% for student_submission_states in students_submission_states %}
+            {% for student in students_submission_states %}
                 <tr>
-                    <td>{{student_submission_states}}</td>
-                    <td>{{students_submission_states[student_submission_states]}}</td>
+                    <td>{{student[0]}}</td>
+                    <td class="{{student[1]}}">{{student[1]}}</td>
                 </tr>
             {% endfor %}
         </tbody>

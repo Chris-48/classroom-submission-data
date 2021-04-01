@@ -1,3 +1,7 @@
+from flask import session
+import google.oauth2.credentials
+
+
 def credentials_to_dict(credentials):
     return {
         'token': credentials.token,
@@ -7,3 +11,7 @@ def credentials_to_dict(credentials):
         'client_secret': credentials.client_secret,
         'scopes': credentials.scopes
         }
+
+
+def get_credentials():
+    return google.oauth2.credentials.Credentials(**session['credentials'])
