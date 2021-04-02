@@ -23,86 +23,146 @@ class classroom_connection:
 
 
     def get_user_id(self) -> str:
-        """return the ID of the user"""
+        """Return the ID of the user"""
 
         return self.service.userProfiles().get(userId="me", fields="id").execute()["id"]
 
 
     def get_courses(self) -> dict:
-        """return a dictionary with the courses and the corresponding id"""
+        """Return a dictionary with the courses and the corresponding id"""
 
-        courses = self.service.courses().list(fields="courses(name,id)").execute()["courses"]
+        courses = {}
+        next_page_token = None
 
-        if courses:
-            return {course["name"] : course["id"] for course in courses}
-        return None
+        while True:
+            response = self.service.courses().list(
+                pageToken=next_page_token, 
+                fields="nextPageToken,courses(name,id)"
+            ).execute()
 
+            courses.update({course["name"] : course["id"] for course in response["courses"]})
+
+            next_page_token = response.get("nextPageToken")
+
+            if next_page_token is None:
+                break
+
+        return courses        
 
     def get_courses_activities(self, course_id) -> dict:
-        """return a dictionary with the course activities and the corresponding id"""
+        """Return a dictionary with the course activities and the corresponding id"""
 
-        activities = self.service.courses().courseWork().list(
-            courseId=course_id, 
-            fields="courseWork(title, id)"
-        ).execute()["courseWork"]
+        activities = {}
+        next_page_token = None
 
-        if activities:
-            return {activity["title"] : activity["id"] for activity in activities}
-        return None
+        while True:
+            response = self.service.courses().courseWork().list(
+                pageToken=next_page_token,
+                courseId=course_id, 
+                fields="nextPageToken,courseWork(title, id)"
+            ).execute()
 
+            activities.update({activity["title"] : activity["id"] for activity in response["courseWork"]})
+
+            next_page_token = response.get("nextPageToken")
+
+            if next_page_token is None:
+                break
+        
+        return activities
 
     def get_courses_topics(self, course_id) -> dict:
-        """return a dictionary with the topics of the course and the corresponding id"""
+        """Return a dictionary with the topics of the course and the corresponding id"""
+        
+        topics = {}
+        next_page_token = None
 
-        topics = self.service.courses().topics().list(
-            courseId=course_id, 
-            fields="topic(name,topicId)"
-        ).execute()["topic"]
+        while True:
+            response = self.service.courses().topics().list(
+                pageToken=next_page_token,
+                courseId=course_id, 
+                fields="nextPageToken,topic(name,topicId)"
+            ).execute()
 
-        if topics:
-            return {topic["name"] : topic["topicId"] for topic in topics}
-        return None
+            topics.update({topic["name"] : topic["topicId"] for topic in response["topic"]})
+            
+            next_page_token = response.get("nextPageToken")
+
+            if next_page_token is None:
+                break
+        
+        return topics
 
 
     def get_activities_from_topic(self, course_id, topic_id) -> dict:
-        """return a dictionary with the course activities and the corresponding id"""
+        """Return a dictionary with the course activities and the corresponding id"""
     
-        activities = self.service.courses().courseWork().list(
-            courseId=course_id, 
-            fields="courseWork(title,id,topicId)"
-        ).execute()["courseWork"]      
+        activities = {}
+        next_page_token = None
 
-        if activities:
-            return {activity["title"] : activity["id"] for activity in activities if activity.get("topicId", None) == topic_id}
-        return None
+        while True:
+            response = self.service.courses().courseWork().list(
+                pageToken=next_page_token,
+                courseId=course_id, 
+                fields="nextPageToken,courseWork(title,id,topicId)"
+            ).execute()
+
+            activities.update({activity["title"] : activity["id"] for activity in response["courseWork"] if activity.get("topicId", None) == topic_id})
+            
+            next_page_token = response.get("nextPageToken")
+
+            if next_page_token is None:
+                break
+
+        return activities
 
     
     def get_students(self, course_id) -> dict:
-        """return a dictionary with the stundents names and the corresponding id"""
-    
-        students = self.service.courses().students().list(
-            courseId = course_id,
-            fields="students(profile/id,profile/name/fullName)"
-        ).execute()["students"]
-        
-        if students:
-            return {student["profile"]["id"] : student["profile"]["name"]["fullName"] for student in students}
-        return None
+        """Return a dictionary with the stundents names and the corresponding id"""
+
+        students = {}
+        next_page_token = None
+
+        while True:
+            response = self.service.courses().students().list(
+                pageToken=next_page_token,
+                courseId = course_id,
+                fields="nextPageToken,students(profile/id,profile/name/fullName)"
+            ).execute()
+            
+            students.update({student["profile"]["id"] : student["profile"]["name"]["fullName"] for student in response["students"]})
+
+            next_page_token = response.get("nextPageToken")
+
+            if next_page_token is None:
+                break
+
+        return students
 
 
     def submission_data(self, course_id, activity_id, students : dict) -> dict:
         """
-        return a dictionary with the stundents names as keys and 'Missing'/'Done' as values acording to the submission state
+        Return a dictionary with the stundents names as keys and 'Missing'/'Done' as values acording to the submission state
         
         students: a dict with the students id as keys and students names as values
         """        
         
-        submissions = self.service.courses().courseWork().studentSubmissions().list(
-            courseId = course_id,
-            courseWorkId = activity_id,
-            fields="studentSubmissions(userId,state)"
-        ).execute()["studentSubmissions"]
+        submissions = {}
+        next_page_token = None
 
-        if submissions:
-            return {students[ submission["userId"] ] : "Missing" if  submission["state"] == "CREATED" else "Done" for submission in submissions}
-        return None
+        while True:
+            response = self.service.courses().courseWork().studentSubmissions().list(
+                courseId = course_id,
+                courseWorkId = activity_id,
+                fields="nextPageToken,studentSubmissions(userId,state)"
+            ).execute()
+
+            submissions.update({students[ submission["userId"] ] : "Missing" if  submission["state"] == "CREATED" else "Done" for submission in response["studentSubmissions"]})            
+
+            next_page_token = response.get("nextPageToken")
+
+            if next_page_token is None:
+                break
+
+        return submissions
+
