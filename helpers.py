@@ -1,27 +1,27 @@
 from sqlite3 import connect
 from flask import session
 import google.oauth2.credentials
+import google_auth_oauthlib
+from flask.helpers import url_for
+
 
 DATABASE = "database.db"
 
 
-def get_credentials():
+def get_credentials(servise: str):
 
-    query = """
+    query = f"""
         SELECT token, token_uri, client_id, refresh_token, client_secret, scopes
-        FROM classroom_credentials
+        FROM {servise}_credentials
         WHERE user_id=?;
     """
 
     with connect(DATABASE) as db:
-
-        cur = db.execute(query, (session["user_id"],))
-
-        credentials = cur.fetchone()
+        credentials = db.execute(query, (session["user_id"],)).fetchone()
 
     if not credentials:
-        raise Exception("user id not in the database")
-    
+        return
+
     credentials = {
         "token": credentials[0],
         "token_uri": credentials[1],
@@ -34,7 +34,7 @@ def get_credentials():
     return google.oauth2.credentials.Credentials(**credentials)
 
 
-def store_credentials(credentials) -> None:
+def store_credentials(servise: str, credentials) -> None:
 
     credentials = (
         credentials.token,
@@ -48,24 +48,61 @@ def store_credentials(credentials) -> None:
 
     with connect(DATABASE) as db:
 
-        print(session["user_id"])
-
         exist = db.execute(
-            "SELECT 1 FROM classroom_credentials WHERE user_id=?", (session["user_id"],)
+            f"SELECT 1 FROM {servise}_credentials WHERE user_id=?", (session["user_id"],)
         ).fetchone()
 
         if exist:
-            query = """
-                UPDATE classroom_credentials
-                SET token=?, token_uri=?, client_id=?, refresh_token=?, client_secret=? scopes=?
-                WHERE user_id=?
+            query = f"""
+                UPDATE {servise}_credentials
+                SET token=?, token_uri=?, client_id=?, refresh_token=?, client_secret=?, scopes=?
+                WHERE user_id=?;
             """
         else:
-            query = """
-                INSERT INTO classroom_credentials 
+            query = f"""
+                INSERT INTO {servise}_credentials 
                 (token, token_uri, client_id, refresh_token, client_secret, scopes, user_id)
                 VALUES (?,?,?,?,?,?,?);
             """
 
         db.execute(query, credentials)
         db.commit()
+
+
+def remove_credentials(service: str):
+    
+    with connect(DATABASE) as db:
+        
+        db.execute(
+            f"DELETE FROM {service}_credentials WHERE user_id=?;", 
+            (session["user_id"],)
+        )
+        db.commit()
+
+
+def create_credentials(service: str, client_secret, scopes, state, url):
+    
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        client_secret,
+        scopes=scopes,
+        state=state
+    )
+
+    flow.redirect_uri = url_for(f"{service}_oauth2callback", _external=True)
+
+    authorization_response = url
+    flow.fetch_token(authorization_response=authorization_response)
+
+    return flow.credentials
+
+
+def create_authorization_url(service: str, client_secret, scopes):
+
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        client_secret,
+        scopes=scopes
+    )
+
+    flow.redirect_uri = url_for(f"{service}_oauth2callback", _external=True)
+
+    return flow.authorization_url(access_type="offline", include_granted_scopes="true")

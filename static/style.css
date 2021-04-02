@@ -33,5 +33,24 @@ footer{
 }
 
 .Done{
-    color: chartreuse;
+    color: rgb(87, 173, 2);
+}
+
+.export{
+    width: 30%;
+    margin-bottom: 2%;
+}
+
+select{
+    -moz-appearance: none;
+    
+    -webkit-appearance: none;
+}
+
+#activity-title{
+    padding-top: 2%;
+}
+
+form{
+    display: inline;
 }

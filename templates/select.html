@@ -1,7 +1,6 @@
 {% extends "layout.html"%}
 
 {%block script%}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
 
@@ -53,7 +52,7 @@
 
                         for (let activity in request_activities)
                         {
-                            html += `<option value="${request_activities[activity]}">${activity}</option>`;
+                            html += `<option value="${request_activities[activity]}---${activity}">${activity}</option>`;
                         }
 
                         activities.html(html);
@@ -75,14 +74,14 @@
         
     <form action="/submission_data" method="POST">
 
-        <select class="btn btn-danger dropdown-toggle form-control custom-select hidden" name="course_id" id="courses">
+        <select class="btn btn-danger dropdown-toggle form-control hidden" name="course_id" id="courses">
             <option disabled selected style="display:none;"> select a course </option>
             {% for course in courses%}
                 <option value="{{courses[course]}}">{{course}}</option>
             {%endfor%}
         </select>
-        <select class="btn btn-warning dropdown-toggle form-control custom-select hidden" name="topic_id" id="topics"></select>
-        <select class="btn btn-success dropdown-toggle form-control custom-select hidden" name="activity_id" id="activities"></select>
+        <select class="btn btn-warning dropdown-toggle form-control hidden" name="topic_id" id="topics"></select>
+        <select class="btn btn-success dropdown-toggle form-control hidden" name="activity" id="activities"></select>
 
         <br>
 

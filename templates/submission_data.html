@@ -4,7 +4,42 @@
     Submission Data
 {% endblock %}
 
+{%block script%}
+    
+    <script>
+        $(document).ready(() =>{
+
+            let students_submission_states = JSON.parse('{{students_submission_states | tojson | safe}}');
+
+            $('#export-csv').click(() =>{
+                
+
+
+            });
+
+            $('#export-google-sheets').click(() =>{
+                
+                $.post(
+                    '/export_google_sheets',
+                    students_submission_states,
+                    (redirect_url) =>{
+                        window.location.href = redirect_url;
+                    }
+                );
+
+            });
+        });
+
+    </script>
+{%endblock%}
+
 {% block main %}
+    
+    <h2 id="activity-title">{{activity_title}}</h2>
+
+    <button type="button" class="export btn btn-warning btn-lg" id="export-csv">export to .csv file</button>
+    <button type="button" class="export btn btn-success btn-lg" id="export-google-sheets">export to google sheets</button>
+
     <table class="table table-striped">
         <thead>
             <th>Name</th>
@@ -12,10 +47,10 @@
         </thead>
         <tbody>
 
-            {% for student in students_submission_states %}
+            {% for student in students_submission_states|sort %}
                 <tr>
-                    <td>{{student[0]}}</td>
-                    <td class="{{student[1]}}">{{student[1]}}</td>
+                    <td>{{student}}</td>
+                    <td class="{{students_submission_states[student]}}">{{students_submission_states[student]}}</td>
                 </tr>
             {% endfor %}
         </tbody>
