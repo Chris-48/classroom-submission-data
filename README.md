@@ -4,7 +4,7 @@
 
 My cs50x final project is a web application that allow the user to easily get the submission data from a classroom course activity that he/she teaches or administers and export this data to a csv file or to google sheets
 
-## Let's start talking about the `app.py` file
+## Let's start talking about the app.py file
 
 the `app.py` is the file that should be executed to start the application it contains the configuration and all the routes of the flask application, all the functions in this file are decorated with `@app.route()`.
 
@@ -30,7 +30,7 @@ the `app.py` is the file that should be executed to start the application it con
 
 helpers folders contains two files: `database.py` and `credentials.py` this files contain helper functions to interact with the database and manage the credentials respectively 
 
-- ### `database.py`
+- ### database.py
   
   - `get_credentials()` this function takes one argument `servise` that is a string and should be "classroom" or "google_sheets", this function is responsible for getting the user credentials to the servise if it's stored in `credentials.db`
   
@@ -38,7 +38,7 @@ helpers folders contains two files: `database.py` and `credentials.py` this file
 
   - `remove_credentials()` this function is responsible for removing the user `servise` credentials from `credentials.db` it takes one arguments `servise` that is a string it should be "classroom" or "google_sheets"
 
-- ### `credentials.py`
+- ### credentials.py
 
   - `create_credentials` create the `servise` credentials for the user
 
@@ -48,13 +48,31 @@ helpers folders contains two files: `database.py` and `credentials.py` this file
 
 connections folder contains two files: `classroom_connection.py` and `google_sheets_connections.py` this files contain classes to create connections between this web application and google APIs 
 
-- ### `classroom_connection.classroom_connection()` methods
+- ### classroom_connection.classroom_connection() methods
 
-  - TODO
+    - support context manager by implementing `__enter__()` and `__exit__()`
 
-- ### `google_sheets_connection.google_sheets_connection()` methods
+  - `get_user_id()` return the id of the user
 
-  - TODO
+  - `get_courses()` return a dictionary with the courses and the corresponding id
+
+  - `get_courses_activities()` return a dictionary with the course activities and the corresponding id
+
+  - `get_course_topics()` return a dictionary with the topics of the course and the corresponding id"
+
+  - `get_activities_from_topic()` return a dictionary with the stundents names and the corresponding id 
+
+  - `get_students()` return a dictionary with the stundents names and the corresponding id
+
+  - `submission_data()` return a dictionary with the stundents names as keys and 'Missing'/'Done' as values acording to the submission state
+
+- ### google_sheets_connection.google_sheets_connection() methods
+
+  - support context manager by implementing `__enter__()` and `__exit__()`
+
+  - `create_spread_sheet()` create a spread sheet and return it's id
+
+  - `append()` append data to the given spread sheet
 
 ## Templates folder
 
@@ -62,7 +80,7 @@ the templates folder contains three templates `layout.html`, `select.html` and `
 
 - TODO
 
-## `credentials.db`
+## credentials.db
 
 - ### classroom credentials table
 

@@ -99,7 +99,7 @@ def request_api():
             if topic_id:
                 return classroom.get_activities_from_topic(course_id, topic_id)
             # Else return the course's topics
-            return classroom.get_courses_topics(course_id)
+            return classroom.get_course_topics(course_id)
     else:
         # Return 406 if wasn't course id given in the request
         return "bad request", 406

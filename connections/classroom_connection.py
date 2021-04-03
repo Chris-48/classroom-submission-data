@@ -71,7 +71,7 @@ class classroom_connection:
         
         return activities
 
-    def get_courses_topics(self, course_id) -> dict:
+    def get_course_topics(self, course_id) -> dict:
         """Return a dictionary with the topics of the course and the corresponding id"""
         
         topics = {}
