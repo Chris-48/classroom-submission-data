@@ -24,7 +24,7 @@ the `app.py` is the file that should be executed to start the application it con
 
 - `classroom_oauth2callback()` this function is executed after the user grant us permission to see his/her classroom data, this function will create the classroom credentials for the user, store it in `credentials.db` and redirect the user to `/select`
 
-- `logout()` this function revoke the user's classroom and google sheets credentials, delete the user id from the session storage and delete the credentials from `credentials.db`
+- `logout()` this function revoke the user's classroom credentials, revoke the user's google sheets credentials, delete the user id from the session storage and delete the credentials from `credentials.db`
 
 ## Helpers folder 
 
@@ -32,7 +32,7 @@ helpers folders contains two files: `database.py` and `credentials.py` this file
 
 - ### database.py
   
-  - `get_credentials()` this function takes one argument `servise` that is a string and should be "classroom" or "google_sheets", this function is responsible for getting the user credentials to the servise if it's stored in `credentials.db`
+  - `get_credentials()` this function takes one argument `servise` that is a string and should be "classroom" or "google_sheets", this function is responsible for getting the user credentials to the `servise` if it's stored in `credentials.db`
   
   - `store_credentials()` this function is responsible for storing the user `servise` credentials in `credentials.db`, it takes two arguments `servise` that is a string it should be "classroom" or "google_sheets" and `credentials` that is a `google.oauth2.credentials.Credentials` object to be store in `credentials.db`
 
