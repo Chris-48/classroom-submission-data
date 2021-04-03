@@ -49,7 +49,7 @@ class classroom_connection:
 
         return courses        
 
-    def get_courses_activities(self, course_id) -> dict:
+    def get_course_activities(self, course_id) -> dict:
         """Return a dictionary with the course activities and the corresponding id"""
 
         activities = {}

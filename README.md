@@ -58,9 +58,9 @@ connections folder contains two files: `classroom_connection.py` and `google_she
 
   - `get_courses_activities()` return a dictionary with the course activities and the corresponding id
 
-  - `get_course_topics()` return a dictionary with the topics of the course and the corresponding id"
+  - `get_course_topics()` return a dictionary with the topics of the course and the corresponding id
 
-  - `get_activities_from_topic()` return a dictionary with the stundents names and the corresponding id 
+  - `get_activities_from_topic()` return a dictionary with the course activities and the corresponding id that belong to the specified topic
 
   - `get_students()` return a dictionary with the stundents names and the corresponding id
 
@@ -78,7 +78,11 @@ connections folder contains two files: `classroom_connection.py` and `google_she
 
 the templates folder contains three templates `layout.html`, `select.html` and `submission_data.html`
 
-- TODO
+- `layout.html` contains the basic layout of the application all the order templates extends from this 
+
+- `select.html` if the user is logged allow the he/she to select course, topic and activity from where the students subimssion data should come if the user isn't logged than allow him/her to do so
+
+- `submission_data.html` display the students submission state data and allow the user to export that data to google sheets or to a csv file
 
 ## credentials.db
 
