@@ -221,8 +221,6 @@ def classroom_oauth2callback():
         request.url
     )
 
-    print("callback", credentials.token_uri)
-
     # Store the user id
     with classroom_connection(credentials) as classroom:
         session["user_id"] = classroom.get_user_id()

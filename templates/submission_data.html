@@ -12,11 +12,44 @@
             // The students submission state data
             let students_submission_states = JSON.parse('{{students_submission_states | tojson | safe}}');
 
+            // function to download a .csv file                  
+            function download_csv_file(data) {
+                // Header
+                let file = 'Name,State\n';
+
+                // Add the data to the file
+                data.forEach(function(row) {
+                    file += row.join(',');
+                    file += "\n";
+                });
+                
+                // Download csv file
+                let download_element = document.createElement('a');
+
+                download_element.href = 'data:text/csv;charset=utf-8,' + encodeURI(file);
+                download_element.target = '_blank';
+                // names the csv file with the title of the activity 
+                download_element.download = '{{activity_title}}.csv';
+                download_element.click();
+            };
+        
             // Hear for clicks in the export to csv button
             $('#export-csv').click(() =>{
                 
+                let rows = [];
 
+                // Transfer the students submission state data to the rows array
+                for (const student in students_submission_states) {
+                    
+                    if (students_submission_states.hasOwnProperty(student))
+                    {
+                        rows.push([student, students_submission_states[student]]);
+                    }
 
+                }
+
+                // Call the download_csv_file and pass rows as the argument of the data parameter
+                download_csv_file(rows);
             });
 
             // Hear for clicks in the export to google sheets button

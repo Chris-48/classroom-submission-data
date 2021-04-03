@@ -6,7 +6,7 @@ import google.oauth2.credentials
 DATABASE = "credentials.db"
 
 
-def get_credentials(servise: str):
+def get_credentials(servise: str) ->  google.oauth2.credentials.Credentials:
     """ 
     Get the credentials for the servise from the database \n
     return None if it hasn't found
@@ -42,8 +42,6 @@ def get_credentials(servise: str):
 
 def store_credentials(servise: str, credentials) -> None:
     """ Store the user servise credentials on the database """
-
-    print("database", credentials.token_uri)
 
     # The data to be stoted in the database
     query_data = (
@@ -84,7 +82,7 @@ def store_credentials(servise: str, credentials) -> None:
         db.commit()
 
 
-def remove_credentials(service: str):
+def remove_credentials(service: str) -> None:
     """ Remove the servise credentials from the database """    
     
     # SQL query to remove the user servise credentials from the database
