@@ -1,29 +1,42 @@
 {% extends "layout.html"%}
 
+{% block title%}
+    
+    {% if session.user_id%}
+        Select
+    {% else %}
+        login
+    {% endif %}
+
+{% endblock %}
+
 {%block script%}
 
     <script>
 
         $(document).ready(() =>{
             
+            // Get elements courses, topics, activities and button
             let courses = $('#courses');
             let topics = $('#topics');
             let activities = $('#activities');
             let button = $('#get-button');
 
-            courses.css({'visibility': 'visible'})
-
+            // Hear for changes in the courses element
             courses.change(() =>{
+                // Hidde the elements that we don't have the info ro display
                 topics.css({'visibility':'hidden'})
                 activities.css({'visibility':'hidden'})
                 button.css({'visibility':'hidden'})
                 
+                // AJAX call to /request_api
                 $.post(
                     '/request_api',
-                    {
-                        'course_id': courses.val()
-                    }, 
+                    // Send the course id
+                    {'course_id': courses.val()}, 
+                    // Callback function
                     (request_topics) =>{
+                        // structure the topics element
                         html = '<option disabled selected style="display:none;"> select a topic </option>';
 
                         for (let topic in request_topics)
@@ -31,35 +44,44 @@
                             html += `<option value="${request_topics[topic]}">${topic}</option>`;
                         }
 
+                        // display the topics element
                         topics.html(html);
                         topics.css({'visibility': 'visible'});
                     });
                 
                 });
 
+            // Hear for changes in the topics element
             topics.change(() =>{
+                // Hidde the elements that we don't have the info ro display
                 activities.css({'visibility':'hidden'})
                 button.css({'visibility':'hidden'})
                 
+                // AJAX call to /request_api
                 $.post(
                     '/request_api',
+                    // Send the course id and the topic id 
                     {
                         'course_id': courses.val(),
                         'topic_id': topics.val()
                     },
+                    // Callback function
                     (request_activities) =>{
+                        // Structure the activities element
                         html = '<option disabled selected style="display:none;"> select a activity </option>';
 
                         for (let activity in request_activities)
                         {
                             html += `<option value="${request_activities[activity]}---${activity}">${activity}</option>`;
                         }
-
+                        
+                        // Display the activities element
                         activities.html(html);
                         activities.css({'visibility': 'visible'});
                     });
             });
-
+        
+        // Hear for changes in the activities element and display the button
         activities.change(() =>{
             button.css({'visibility': 'visible'}) 
         });
@@ -70,24 +92,29 @@
 {%endblock%}
 
 {%block main%}    
+    <!-- If the user is already logged let she/he select -->
     {% if session.user_id %}
-        
+    
     <form action="/submission_data" method="POST">
 
-        <select class="btn btn-danger dropdown-toggle form-control hidden" name="course_id" id="courses">
+        <!-- Courses element -->
+        <select class="btn btn-danger dropdown-toggle form-control" name="course_id" id="courses">
             <option disabled selected style="display:none;"> select a course </option>
             {% for course in courses%}
                 <option value="{{courses[course]}}">{{course}}</option>
             {%endfor%}
         </select>
+        <!-- Topics element -->
         <select class="btn btn-warning dropdown-toggle form-control hidden" name="topic_id" id="topics"></select>
+        <!-- Activities elemet -->
         <select class="btn btn-success dropdown-toggle form-control hidden" name="activity" id="activities"></select>
 
         <br>
 
+        <!-- submit button -->
         <input id="get-button" class="btn btn-primary hidden" type="submit" value="GO">
     </form>
-
+    <!-- Else let the user login -->
     {% else %}
         <div style="margin-bottom: 33%;">
             <a class="btn btn-primary btn-lg" href="/login">Log In</a>

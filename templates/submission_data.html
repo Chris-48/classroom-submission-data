@@ -9,20 +9,25 @@
     <script>
         $(document).ready(() =>{
 
+            // The students submission state data
             let students_submission_states = JSON.parse('{{students_submission_states | tojson | safe}}');
 
+            // Hear for clicks in the export to csv button
             $('#export-csv').click(() =>{
                 
 
 
             });
 
+            // Hear for clicks in the export to google sheets button
             $('#export-google-sheets').click(() =>{
-                
+
+                // AJAX call to /export_google_sheets
                 $.post(
                     '/export_google_sheets',
                     students_submission_states,
                     (redirect_url) =>{
+                        // Redirect the user to the recetly created spread sheets
                         window.location.href = redirect_url;
                     }
                 );
@@ -35,11 +40,14 @@
 
 {% block main %}
     
+    <!-- Title of the activity -->
     <h2 id="activity-title">{{activity_title}}</h2>
 
+    <!-- Export buttons -->
     <button type="button" class="export btn btn-warning btn-lg" id="export-csv">export to .csv file</button>
     <button type="button" class="export btn btn-success btn-lg" id="export-google-sheets">export to google sheets</button>
 
+    <!-- Table with the students submission state data sorted in alphabetical order -->
     <table class="table table-striped">
         <thead>
             <th>Name</th>

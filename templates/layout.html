@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" href="/static/style.css">
 
+    <!-- AJAX with jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     {% block script %}{% endblock %}
 
@@ -18,23 +19,28 @@
 </head>
 <body>
 
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-md navbar-light bg-light border">
+        <!-- Redirect to select -->
         <a class="navbar-brand" href="/">Select course</a>
         <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbar">
-            <ul class="navbar-nav mr-auto mt-2"></ul>
+            
             <ul class="navbar-nav ml-auto mt-2">
-                <li class="nav-item"><a class="nav-link" href="/logout">Clear token</a></li>
+                <!-- Logout-->
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
             </ul>
         </div>
     </nav>
 
     <div class="content">
         
+        <!-- Main part of the page-->
         {% block main %}{% endblock %}
 
+        <!-- Page footer -->
         <footer class="small text-center text-muted">
             <hr>
             Final project from 
