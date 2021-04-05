@@ -56,7 +56,7 @@ connections folder contains two files: `classroom_connection.py` and `google_she
 
   - `get_courses()` return a dictionary with the courses and the corresponding id
 
-  - `get_courses_activities()` return a dictionary with the course activities and the corresponding id
+  - `get_course_activities()` return a dictionary with the course activities and the corresponding id
 
   - `get_course_topics()` return a dictionary with the topics of the course and the corresponding id
 
