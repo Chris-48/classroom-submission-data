@@ -1,6 +1,6 @@
 # Classroom Submission project
 
-## [Vídeo](https://youtube.com) presenting the project
+## [Vídeo](https://youtu.be/vdPNuAw8sfE) presenting the project
 
 My cs50x final project is a web application that allow the user to easily get the submission data from a classroom course activity that he/she teaches or administers and export this data to a csv file or to google sheets
 
