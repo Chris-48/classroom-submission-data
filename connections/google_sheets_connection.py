@@ -27,7 +27,7 @@ class google_sheets_connection:
 
         # create a dict so it can be given for the body param to add the title
         spreadsheet = {
-            'properties': 
+            'properties':
             {
                 'title': title
             }
@@ -38,10 +38,10 @@ class google_sheets_connection:
             body=spreadsheet,
             fields="spreadsheetId,spreadsheetUrl"
         ).execute()
-    
+
         return spread_sheet["spreadsheetId"], spread_sheet["spreadsheetUrl"]
 
-    
+
     def append(self, data: dict, spread_sheet_id, start_sheet="A1"):
         """append data to the given spread sheet"""
 
@@ -52,7 +52,7 @@ class google_sheets_connection:
             tuple(state for state in data.values())
             )
         )
-        
+
         values_range_body = {
             "majorDimension": "COLUMNS",
             "values": values

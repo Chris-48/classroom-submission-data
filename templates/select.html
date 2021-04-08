@@ -1,7 +1,7 @@
 {% extends "layout.html"%}
 
 {% block title%}
-    
+
     {% if session.user_id%}
         Select
     {% else %}
@@ -15,7 +15,7 @@
     <script>
 
         $(document).ready(() =>{
-            
+
             // Get elements courses, topics, activities and button
             let courses = $('#courses');
             let topics = $('#topics');
@@ -28,12 +28,12 @@
                 topics.css({'visibility':'hidden'})
                 activities.css({'visibility':'hidden'})
                 button.css({'visibility':'hidden'})
-                
+
                 // AJAX call to /request_api
                 $.post(
                     '/request_api',
                     // Send the course id
-                    {'course_id': courses.val()}, 
+                    {'course_id': courses.val()},
                     // Callback function
                     (request_topics) =>{
                         // structure the topics element
@@ -48,7 +48,7 @@
                         topics.html(html);
                         topics.css({'visibility': 'visible'});
                     });
-                
+
                 });
 
             // Hear for changes in the topics element
@@ -56,11 +56,11 @@
                 // Hidde the elements that we don't have the info ro display
                 activities.css({'visibility':'hidden'})
                 button.css({'visibility':'hidden'})
-                
+
                 // AJAX call to /request_api
                 $.post(
                     '/request_api',
-                    // Send the course id and the topic id 
+                    // Send the course id and the topic id
                     {
                         'course_id': courses.val(),
                         'topic_id': topics.val()
@@ -74,27 +74,27 @@
                         {
                             html += `<option value="${request_activities[activity]}---${activity}">${activity}</option>`;
                         }
-                        
+
                         // Display the activities element
                         activities.html(html);
                         activities.css({'visibility': 'visible'});
                     });
             });
-        
+
         // Hear for changes in the activities element and display the button
         activities.change(() =>{
-            button.css({'visibility': 'visible'}) 
+            button.css({'visibility': 'visible'})
         });
-        
+
     });
 
     </script>
 {%endblock%}
 
-{%block main%}    
+{%block main%}
     <!-- If the user is already logged let she/he select -->
     {% if session.user_id %}
-    
+
     <form action="/submission_data" method="POST">
 
         <!-- Courses element -->

@@ -7,7 +7,7 @@ DATABASE = "credentials.db"
 
 
 def get_credentials(servise: str) ->  google.oauth2.credentials.Credentials:
-    """ 
+    """
     Get the credentials for the servise from the database \n
     return None if it hasn't found
     """
@@ -48,8 +48,8 @@ def store_credentials(servise: str, credentials) -> None:
         credentials.token,
         credentials.token_uri,
         credentials.client_id,
-        credentials.refresh_token, 
-        credentials.client_secret, 
+        credentials.refresh_token,
+        credentials.client_secret,
         " ".join(credentials.scopes),
         session["user_id"]
     )
@@ -62,7 +62,7 @@ def store_credentials(servise: str, credentials) -> None:
             (session["user_id"],)
         ).fetchone()
 
-        # If it exist the query should update it 
+        # If it exist the query should update it
         if exist:
             query = f"""
                 UPDATE {servise}_credentials
@@ -72,7 +72,7 @@ def store_credentials(servise: str, credentials) -> None:
         # Else the query should add it to the database
         else:
             query = f"""
-                INSERT INTO {servise}_credentials 
+                INSERT INTO {servise}_credentials
                 (token, token_uri, client_id, refresh_token, client_secret, scopes, user_id)
                 VALUES (?,?,?,?,?,?,?);
             """
@@ -83,12 +83,12 @@ def store_credentials(servise: str, credentials) -> None:
 
 
 def remove_credentials(service: str) -> None:
-    """ Remove the servise credentials from the database """    
-    
+    """ Remove the servise credentials from the database """
+
     # SQL query to remove the user servise credentials from the database
     query = f"DELETE FROM {service}_credentials WHERE user_id=?;"
 
     # Execute the query
-    with connect(DATABASE) as db:    
+    with connect(DATABASE) as db:
         db.execute(query, (session["user_id"],))
         db.commit()

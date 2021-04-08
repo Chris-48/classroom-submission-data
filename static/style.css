@@ -24,7 +24,7 @@ footer{
 
 .btn{
     text-align: center;
-    margin: auto; 
+    margin: auto;
     margin-top: 2%;
 }
 
@@ -43,7 +43,7 @@ footer{
 
 select{
     -moz-appearance: none;
-    
+
     -webkit-appearance: none;
 }
 

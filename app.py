@@ -63,7 +63,7 @@ GOOGLE_SHEETS_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 @app.route("/")
 def index():
     """ Main route redirect to /select """
-    
+
     return redirect("/select")
 
 
@@ -92,9 +92,9 @@ def request_api():
     topic_id = request.form.get("topic_id")
 
     if course_id:
-        
+
         with classroom_connection(get_credentials("classroom")) as classroom:
-            
+
             # If the topic id was given in the request return the activities from this topic
             if topic_id:
                 return classroom.get_activities_from_topic(course_id, topic_id)
@@ -107,9 +107,9 @@ def request_api():
 
 @app.route("/submission_data", methods=["POST"])
 def submission_data():
-    """ 
+    """
     Load the submission data template so the user can see the submission state from the students
-    and export the data to csv or to google sheets 
+    and export the data to csv or to google sheets
     """
 
     # Get the course id from the request
@@ -143,7 +143,7 @@ def export_google_sheets():
     if credentials:
 
         with google_sheets_connection(credentials) as google_sheets:
-            
+
             # Create a new spread sheet
             spread_sheet_id, spread_sheet_url = google_sheets.create_spread_sheet(
                 request.form.get("activity_title")
@@ -154,13 +154,13 @@ def export_google_sheets():
 
         # Return the url for the recently created spread sheet
         return spread_sheet_url
-    
+
     # Else ask the user for authorization
     else:
 
         authorization_url, state = create_authorization_url(
             "google_sheets",
-            GOOGLE_SHEETS_CLIENT_SECRETS, 
+            GOOGLE_SHEETS_CLIENT_SECRETS,
             GOOGLE_SHEETS_SCOPES
         )
 
@@ -171,17 +171,17 @@ def export_google_sheets():
 
 @app.route("/google_sheets_oauth2callback")
 def google_sheets_oauth2callback():
-    """ 
+    """
     The route that the user will be send after grant permission to
-    create and modify his/her spread sheets 
+    create and modify his/her spread sheets
     """
 
     # Create the credentials for the google sheets
     credentials = create_credentials(
         "google_sheets",
-        GOOGLE_SHEETS_CLIENT_SECRETS, 
-        GOOGLE_SHEETS_SCOPES, 
-        session["google_sheets_state"], 
+        GOOGLE_SHEETS_CLIENT_SECRETS,
+        GOOGLE_SHEETS_SCOPES,
+        session["google_sheets_state"],
         request.url
     )
 
@@ -196,7 +196,7 @@ def google_sheets_oauth2callback():
 def login():
     """ Ask the user for authorization """
 
-    # Create the authorization url 
+    # Create the authorization url
     authorization_url, state = create_authorization_url(
         "classroom",
         CLASSROOM_CLIENT_SECRETS,
@@ -212,7 +212,7 @@ def login():
 def classroom_oauth2callback():
     """ The route that the user will be send after grant permission to see his/her classroom info """
 
-    # Create the credentials for the google classroom 
+    # Create the credentials for the google classroom
     credentials = create_credentials(
         "classroom",
         CLASSROOM_CLIENT_SECRETS,
@@ -238,11 +238,11 @@ def logout():
 
     # Revoke the credentials
     if "user_id" in session:
-        
+
         classroom_credentials = get_credentials("classroom")
 
         if classroom_credentials:
-            
+
             # Revoke the classroom token
             post(
                 "https://oauth2.googleapis.com/revoke",
@@ -256,7 +256,7 @@ def logout():
         google_sheets_credentials = get_credentials("google_sheets")
 
         if google_sheets_credentials:
-            
+
             # Revoke the google sheets token
             post(
                 "https://oauth2.googleapis.com/revoke",

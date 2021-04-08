@@ -26,14 +26,14 @@ the `app.py` is the file that should be executed to start the application it con
 
 - `logout()` this function revoke the user's classroom credentials, revoke the user's google sheets credentials, delete the user id from the session storage and delete the credentials from `credentials.db`
 
-## Helpers folder 
+## Helpers folder
 
-helpers folders contains two files: `database.py` and `credentials.py` this files contain helper functions to interact with the database and manage the credentials respectively 
+helpers folders contains two files: `database.py` and `credentials.py` this files contain helper functions to interact with the database and manage the credentials respectively
 
 - ### database.py
-  
+
   - `get_credentials()` this function takes one argument `servise` that is a string and should be "classroom" or "google_sheets", this function is responsible for getting the user credentials to the `servise` if it's stored in `credentials.db`
-  
+
   - `store_credentials()` this function is responsible for storing the user `servise` credentials in `credentials.db`, it takes two arguments `servise` that is a string it should be "classroom" or "google_sheets" and `credentials` that is a `google.oauth2.credentials.Credentials` object to be store in `credentials.db`
 
   - `remove_credentials()` this function is responsible for removing the user `servise` credentials from `credentials.db` it takes one arguments `servise` that is a string it should be "classroom" or "google_sheets"
@@ -46,7 +46,7 @@ helpers folders contains two files: `database.py` and `credentials.py` this file
 
 ## Connections  folder
 
-connections folder contains two files: `classroom_connection.py` and `google_sheets_connections.py` this files contain classes to create connections between this web application and google APIs 
+connections folder contains two files: `classroom_connection.py` and `google_sheets_connections.py` this files contain classes to create connections between this web application and google APIs
 
 - ### classroom_connection.classroom_connection() methods
 
@@ -78,7 +78,7 @@ connections folder contains two files: `classroom_connection.py` and `google_she
 
 the templates folder contains three templates `layout.html`, `select.html` and `submission_data.html`
 
-- `layout.html` contains the basic layout of the application all the order templates extends from this 
+- `layout.html` contains the basic layout of the application all the order templates extends from this
 
 - `select.html` if the user is logged allow the he/she to select course, topic and activity from where the students subimssion data should come if the user isn't logged than allow him/her to do so
 
